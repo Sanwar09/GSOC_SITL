@@ -1,0 +1,18 @@
+# Exclude giant folders
+node_modules/
+backend/venv/
+backend/__pycache__/
+
+# Exclude sensitive/personal data
+backend/api_key.txt
+backend/face_database/
+.env
+
+# Exclude media files (Use Google Drive for the demo video)
+*.jpg
+*.png
+*.mp4
+
+# Exclude OS junk
+.DS_Store
+Thumbs.db

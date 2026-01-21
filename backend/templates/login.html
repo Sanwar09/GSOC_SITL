@@ -1,0 +1,91 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login - Visual AI Avatar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="auth-body">
+
+    <a href="/dashboard" class="back-to-dash">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+
+    <div class="login-register-container">
+        <div class="login-header">
+            <i class="fas fa-eye"></i>
+            <h1 class="login-title">Secure Login</h1>
+            <p class="login-subtitle">Access your Visual AI Avatar account with advanced biometric authentication.</p>
+        </div>
+        
+        <div class="face-id-section">
+            <h2 class="face-id-title">Face ID Authentication</h2>
+            <p class="face-id-instruction">Look directly at the camera for secure biometric login.</p>
+            
+            <div class="camera-box">
+                <div id="permission-denied" class="permission-view">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Camera access required for Face ID</span>
+                    <button id="grant-permission-btn">Grant Camera Permission</button>
+                </div>
+                <div id="loading-camera" class="permission-view hidden">
+                    <div class="loader"></div>
+                    <span>Starting camera...</span>
+                </div>
+                <video id="video-feed" width="320" height="240" autoplay muted playsinline class="rounded-lg hidden"></video>
+            </div>
+            
+            <button id="face-login-btn" class="face-id-btn">
+                <i class="fas fa-camera"></i> Login with Face ID
+            </button>
+            <p id="status-message" class="status-text"></p>
+        </div>
+
+        <div class="login-footer">
+            <span>Use Password Instead</span>
+            <a href="/register" class="register-link">Don't have an account? <strong>Register here</strong></a>
+            <p class="security-text"><i class="fas fa-shield-alt"></i> Protected by military-grade encryption</p>
+        </div>
+    </div>
+
+    <script src="/static/js/auth.js"></script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center h-screen">
+    <div class="auth-container">
+        <h1 class="auth-title">User Login</h1>
+        
+        <div id="face-login-section" class="text-center">
+            <video id="video-feed" width="320" height="240" autoplay muted class="rounded-lg mx-auto mb-4 border-2 border-gray-600 bg-gray-900"></video>
+            <button id="face-login-btn" class="auth-button bg-cyan-500 hover:bg-cyan-600 w-full">Login with Face ID</button>
+            <p id="status-message" class="mt-4 text-gray-400 h-5">Position your face in the camera frame.</p>
+        </div>
+
+        <div class="my-6 flex items-center">
+            <hr class="flex-grow border-gray-600"><span class="px-4 text-gray-400">OR</span><hr class="flex-grow border-gray-600">
+        </div>
+
+        <form id="password-login-form">
+            <input type="text" id="username" placeholder="Username" required class="auth-input">
+            <input type="password" id="password" placeholder="Password" required class="auth-input">
+            <button type="submit" class="auth-button bg-indigo-500 hover:bg-indigo-600 w-full">Login with Password</button>
+        </form>
+         <p class="mt-6 text-center"><a href="/dashboard" class="text-cyan-400 hover:underline">Back to Dashboard</a></p>
+    </div>
+    <script src="/static/js/auth.js"></script>
+</body>
+</html>

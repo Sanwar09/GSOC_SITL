@@ -1,0 +1,90 @@
+{
+    "sach": {
+        "password_hash": "scrypt:32768:8:1$CyO3jUUKyD1JQbf4$994df9dfe603b02cfec3349efc3a8391113717ecda31887be6a81d0e8dd02edb480dc2c6b9968f0fd4ca6c0b0cf6b47a5c5d383b4dfde8d33d476df690a8aece",
+        "face_id": 0,
+        "voice_enrolled": false,
+        "friends": []
+    },
+    "abc": {
+        "password_hash": "scrypt:32768:8:1$71vIVP0w4OFBBZF2$e1e7fe06ac8be284d0b8e2f5b27e1829b73533931d86a9bb0afccd8754d8396fc461ea291675f0cf5dbae926db77e8baf6925d2eca0b5d2675a84daffcb3c554",
+        "face_id": 1,
+        "voice_enrolled": true,
+        "friends": [
+            "nihal"
+        ]
+    },
+    "nihal": {
+        "password_hash": null,
+        "face_id": 2,
+        "voice_enrolled": false,
+        "friends": []
+    },
+    "sanwar": {
+        "password_hash": "scrypt:32768:8:1$Brza5M2pGOQ7BqaZ$1ee050a00fb093bfb46b3766e143ca98588690b5908450be511ac2a65badbc6c54095308037f169b0669b59e0b48b9efa8e2ae885844618f01d2ee7b2fb4a536",
+        "face_id": 3,
+        "voice_enrolled": true,
+        "friends": [
+            "Mam"
+        ]
+    },
+    "Mam": {
+        "password_hash": null,
+        "face_id": 4,
+        "voice_enrolled": false,
+        "friends": []
+    },
+    "piyu": {
+        "password_hash": "scrypt:32768:8:1$9GXIaEp40NMj3xfj$7da632ca983329a28b33c77a73be7776c94d46493a3eda053a48e8c12150e914f1dd3f8e212d6c831247c15a9ad8b90bcb17076b3d26e3a8218e357ef49e49bd",
+        "face_id": 5,
+        "voice_enrolled": true,
+        "friends": []
+    },
+    "Guddi": {
+        "password_hash": null,
+        "face_id": 6,
+        "voice_enrolled": false,
+        "friends": []
+    },
+    "darshana": {
+        "password_hash": "scrypt:32768:8:1$UaXUxzR6H6M165yp$505185fa3caec69ab71e5888d4a96b1c00b2a2127da4b571fbdcc24f7e0e81d926d0910f298d7b095e16895ecf5563094b61a095f90a1f0b5c7e0146fad28b07",
+        "face_id": 7,
+        "voice_enrolled": true,
+        "friends": []
+    },
+    "Sanwar": {
+        "password_hash": null,
+        "face_id": 8,
+        "voice_enrolled": false,
+        "friends": []
+    },
+    "deepak": {
+        "password_hash": "scrypt:32768:8:1$xPJCQ3ePyhRnoRX5$09346d2d084e79f721a4da3ff916ca4ec3a3e5a42c745b4d0bef35505dfcff898c3b5ed765249d470c4bb485a63a3dd2618b48d07f6f5835ada54353477bd7e3",
+        "face_id": 9,
+        "voice_enrolled": true,
+        "friends": []
+    },
+    "riya": {
+        "password_hash": "scrypt:32768:8:1$V41wUdbFym1JYxrj$5ede70f99a5b1fdb8d8b4bad455ff22ab02b9b2a7c4d86260855c3a5772d1f03aa6b680831a6c9b80519713e7eb73aa453679448da1f6c570f294464b2c1ab9e",
+        "face_id": 10,
+        "voice_enrolled": true,
+        "friends": []
+    },
+    "sainath": {
+        "password_hash": "scrypt:32768:8:1$HA1KeAXKDY5PUsnk$5dd82dc309260eb03196e4a17d99d3ee3941934ece3bc307191400cafe9c3b9e626a8e3ace14870ac02629b421636d2c6700d6dab303e972495a0f76df8238d1",
+        "face_id": 11,
+        "voice_enrolled": true,
+        "friends": []
+    },
+    "Nihal": {
+        "password_hash": "scrypt:32768:8:1$GB3n64VxSu6XCvwN$680bd997b89bc918f8468189dfebd3f9c32eaef037cf727c69b02d8615e597c90eeda84cdc0c4e92df1993d114b32e5cbd8a4358bca111ef37dc2a104ad1a90d",
+        "face_id": 12,
+        "voice_enrolled": true,
+        "friends": []
+    },
+    "sb": {
+        "password_hash": "scrypt:32768:8:1$IunUg5vPk4rXD6Lv$32b06bcdd4b69b30dcc052f25e2b88c54882a6486104500c458945d5f32c392f6f0780d8ac2403a1ed242f4b0610aed241a33172509fec677bffef4e21ca3419",
+        "face_id": 13,
+        "voice_enrolled": true,
+        "friends": []
+    }
+}

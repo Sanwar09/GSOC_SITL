@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual AI Avatar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
+
+    <style>
+        #home-base-panorama {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; 
+            display: none;
+        }
+
+        /* --- MEDIA MENU STYLES --- */
+        .media-menu {
+            position: absolute;
+            bottom: 70px; /* Above the chat bar */
+            left: 10px;
+            background-color: #1f2937; /* slate-800 */
+            border: 1px solid #374151; /* slate-700 */
+            border-radius: 12px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            z-index: 20000;
+            min-width: 150px;
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .media-menu.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto !important;
+        }
+
+        .media-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: transparent;
+            border: none;
+            color: #e5e7eb;
+            padding: 10px 12px;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+
+        .media-option:hover {
+            background-color: #374151;
+        }
+    </style>
+</head>
+<body class="bg-gray-900">
+
+    <div id="home-base-panorama"></div>
+
+    <div id="container"></div>
+
+    <button id="logout-btn">Logout</button>
+
+    <div id="visual-output-container"></div>
+    
+    <video id="camera-video" class="hidden" autoplay playsinline style="position: fixed; top: 10px; left: 10px; width: 20%; max-width: 280px; z-index: 50; border-radius: 10px; border: 2px solid #4A5568;"></video>
+    
+    <div id="chat-container">
+        <button id="plus-btn" class="chat-btn" style="background-color: #374151; margin-right: 5px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        </button>
+
+        <div class="media-menu" id="media-menu">
+            <button class="media-option" onclick="triggerFileUpload('image/*')">
+                <span>🖼️</span> Photo
+            </button>
+            <button class="media-option" onclick="openCameraModal()">
+                 <span>📸</span> Camera
+            </button>
+            <button class="media-option" onclick="triggerFileUpload('.pdf,.txt,.docx,.md')">
+                 <span>📄</span> File (RAG)
+            </button>
+        </div>
+
+        <input type="file" id="hidden-file-input" style="display: none;">
+
+        <input type="text" id="chat-input" placeholder="Type or use the mic...">
+        <button id="ask-btn" class="chat-btn">✨ Ask</button>
+        <button id="mic-btn" class="chat-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z"/></svg>
+        </button>
+        <button id="stop-btn" class="chat-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M6 6h12v12H6z"/></svg>
+        </button>
+
+        <button id="collapse-btn" class="chat-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+    </div>
+
+    <audio id="timer-alarm" src="https://www.soundjay.com/buttons/sounds/button-7.mp3" preload="auto"></audio>
+    
+    <div id="movie-modal-overlay" class="fixed inset-0 p-4 flex items-center justify-center z-[1000] opacity-0 pointer-events-none hidden bg-black bg-opacity-80">
+        <div id="movie-container" class="relative w-full max-w-4xl bg-gray-900 rounded-lg shadow-xl overflow-hidden">
+            <div class="flex justify-between items-center p-4 border-b border-gray-700">
+                <h2 id="movie-title-display" class="text-xl font-bold text-white">Now Playing</h2>
+                <button id="close-movie-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-full">&times;</button>
+            </div>
+            <div style="padding-top: 56.25%;" class="relative"> <iframe id="movie-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen class="absolute top-0 left-0 w-full h-full border-0"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <div id="camera-modal-overlay" class="hidden">
+        <div class="camera-container">
+            <button id="close-camera-btn" class="absolute top-4 right-4 bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-full text-sm z-10">Close</button>
+            <h1 class="text-3xl font-bold mb-6 text-center text-indigo-400 shrink-0">AI Avatar Camera</h1>
+            <div id="camera-view" class="w-full h-auto flex flex-col items-center">
+                <video id="video-feed" class="w-full h-auto rounded-xl shadow-lg border-4 border-slate-700 mb-6" autoplay playsinline></video>
+                <div id="camera-timer-display" class="text-5xl font-extrabold text-white mb-6 hidden"></div>
+                <div class="flex items-center justify-center gap-4">
+                    <button id="snap-photo-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-8 rounded-full">Take a Photo</button>
+                    
+                    <button id="flip-camera-button" title="Flip Camera" class="p-3 rounded-full bg-slate-700 hover:bg-slate-600 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-cw"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>
+                    </button>
+                </div>
+            </div>
+            <div id="editing-view" class="w-full h-auto hidden flex-col items-center">
+                <canvas id="main-canvas" class="w-full h-auto rounded-xl shadow-lg border-4 border-slate-700 mb-6 cursor-grab"></canvas>
+                </div>
+            <canvas id="photo-canvas" class="hidden"></canvas>
+            <div id="flash-overlay" class="absolute inset-0 bg-white rounded-xl hidden"></div>
+        </div>
+        <div id="save-modal" class="modal-overlay hidden">
+            <div class="modal-content text-center">
+                <h2 class="text-xl font-bold mb-4">What's your name?</h2>
+                <input type="text" id="filename-input" class="w-full rounded-md px-4 py-2 mb-4 bg-slate-700 border border-slate-600 text-white" placeholder="e.g., Alex">
+                <div class="flex justify-center space-x-4">
+                    <button id="modal-save-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full">Save</button>
+                    <button id="modal-cancel-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="introduction-modal-overlay" class="fixed inset-0 p-4 flex-col items-center justify-center z-[1000] opacity-0 pointer-events-none hidden bg-black bg-opacity-80">
+        <div class="bg-slate-800 p-8 rounded-xl shadow-2xl border border-slate-700 w-full max-w-lg text-white text-center">
+            <h2 class="text-3xl font-bold mb-4 text-sky-400">Let's Meet Your Friend!</h2>
+            <p id="intro-modal-instructions" class="text-slate-300 mb-6">What is your friend's name?</p>
+            
+            <div id="intro-name-step">
+                <input type="text" id="friend-name-input" class="w-full rounded-md px-4 py-3 mb-6 bg-slate-700 border border-slate-600 text-white text-lg" placeholder="Enter name here...">
+            </div>
+
+            <div id="intro-camera-step" class="hidden">
+                <div class="w-full aspect-video rounded-lg overflow-hidden border-2 border-slate-600 mb-6 bg-black">
+                    <video id="intro-modal-video" class="w-full h-full" autoplay playsinline></video>
+                    <canvas id="intro-modal-canvas" class="hidden"></canvas>
+                </div>
+            </div>
+
+            <div class="flex justify-center space-x-4">
+                <button id="intro-modal-next-btn" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-6 rounded-full">Next</button>
+                <button id="intro-modal-capture-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-full hidden">Remember Face</button>
+                <button id="intro-modal-cancel-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="trivia-modal-overlay" class="fixed inset-0 p-4 flex items-center justify-center z-[1000] opacity-0 pointer-events-none hidden">
+        <div id="trivia-container" class="relative">
+            <div id="topic-selection">
+                <button onclick="goHome()" class="absolute top-4 right-4 bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 z-10">🏠 Home</button>
+                <h1 class="text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-500">AI Student Trivia</h1>
+                <p class="text-gray-400 mb-8">For students aged 6-14. Pick a topic to start!</p>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <button onclick="startGame('General Knowledge')" class="topic-btn p-6 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl text-lg md:text-xl font-semibold">🧠 General Knowledge</button>
+                    <button onclick="startGame('Science Fun')" class="topic-btn p-6 bg-gradient-to-br from-green-500 to-green-600 rounded-xl text-lg md:text-xl font-semibold">🔬 Science Fun</button>
+                    <button onclick="startGame('History & Myths')" class="topic-btn p-6 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl text-lg md:text-xl font-semibold">📜 History & Myths</button>
+                    <button onclick="startGame('World Explorer')" class="topic-btn p-6 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl text-lg md:text-xl font-semibold">🌍 World Explorer</button>
+                    <button onclick="startGame('Math & Logic')" class="topic-btn p-6 bg-gradient-to-br from-red-500 to-red-600 rounded-xl text-lg md:text-xl font-semibold">➕ Math & Logic</button>
+                    <button onclick="startGame('Aptitude Puzzles')" class="topic-btn p-6 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl text-lg md:text-xl font-semibold">🤔 Aptitude Puzzles</button>
+                </div>
+            </div>
+            <div id="game-view" class="hidden">
+                 <div class="flex justify-between items-center mb-6">
+                    <div class="flex gap-2">
+                        <button onclick="goBackToTopics()" class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200">⬅️ Back</button>
+                        <button onclick="goHome()" class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200">🏠 Home</button>
+                    </div>
+                    <h2 id="topic-title" class="text-2xl font-bold text-sky-400"></h2>
+                    <p class="text-xl font-semibold">Score: <span id="score">0</span></p>
+                </div>
+                <div id="loader-container" class="flex justify-center items-center h-64">
+                    <div class="loader"></div>
+                </div>
+                <div id="qa-container" class="hidden">
+                    <div class="min-h-[100px] bg-gray-900/50 p-4 rounded-lg mb-6 flex items-center justify-center">
+                        <p id="question-text" class="text-2xl font-medium"></p>
+                    </div>
+                    <div id="answers-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"></div>
+                    <div id="fun-fact-container" class="min-h-[80px] p-3 rounded-lg text-sky-300 italic text-center">
+                        <p id="fun-fact-text"></p>
+                    </div>
+                </div>
+                <button id="next-question-btn" class="hidden mt-4 w-full bg-gradient-to-br from-sky-500 to-sky-600 text-white font-bold py-3 px-6 rounded-lg">Next Question</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.1/annyang.min.js"></script>
+    <script type="module" src="/static/js/main.js"></script>
+
+    <script>
+        const menu = document.getElementById('media-menu');
+        const plusBtn = document.getElementById('plus-btn');
+        const fileInput = document.getElementById('hidden-file-input');
+        
+        // Camera Elements
+        const cameraModal = document.getElementById('camera-modal-overlay');
+        const videoFeed = document.getElementById('video-feed');
+        const closeCameraBtn = document.getElementById('close-camera-btn');
+        const snapPhotoBtn = document.getElementById('snap-photo-btn');
+        const photoCanvas = document.getElementById('photo-canvas');
+        let stream = null;
+
+        // 1. Toggle Menu
+        plusBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menu.classList.toggle('show');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!menu.contains(e.target) && !plusBtn.contains(e.target)) {
+                menu.classList.remove('show');
+            }
+        });
+
+        // 2. Trigger File Upload (Photos or Docs)
+        window.triggerFileUpload = function(acceptType) {
+            fileInput.setAttribute('accept', acceptType);
+            fileInput.click();
+            menu.classList.remove('show');
+        }
+
+        // 3. Open Camera Modal
+        window.openCameraModal = async function() {
+            menu.classList.remove('show'); // Hide menu
+            cameraModal.classList.remove('hidden');
+            cameraModal.classList.add('visible'); // Show modal
+            
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoFeed.srcObject = stream;
+            } catch (err) {
+                console.error("Camera access denied:", err);
+                alert("Could not open camera.");
+                closeCamera();
+            }
+        }
+
+        // 4. Close Camera
+        function closeCamera() {
+            cameraModal.classList.add('hidden');
+            cameraModal.classList.remove('visible');
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            videoFeed.srcObject = null;
+        }
+        closeCameraBtn.addEventListener('click', closeCamera);
+
+        // 5. Take Photo & Send to Backend
+        snapPhotoBtn.addEventListener('click', async () => {
+            if (!stream) return;
+            
+            // Draw video frame to canvas
+            photoCanvas.width = videoFeed.videoWidth;
+            photoCanvas.height = videoFeed.videoHeight;
+            const ctx = photoCanvas.getContext('2d');
+            ctx.drawImage(videoFeed, 0, 0, photoCanvas.width, photoCanvas.height);
+            
+            // Convert to Blob and Upload
+            photoCanvas.toBlob(async (blob) => {
+                const formData = new FormData();
+                formData.append('file', blob, 'webcam-capture.jpg');
+                
+                closeCamera(); // Close immediately
+                
+                // Show thinking state
+                const chatInput = document.getElementById('chat-input');
+                chatInput.value = "Analyzing captured photo...";
+
+                try {
+                    const res = await fetch('/process_media', { method: 'POST', body: formData });
+                    const data = await res.json();
+                    
+                    chatInput.value = '';
+                    console.log("Photo Analysis:", data);
+                    
+                    // Dispatch to Main JS to speak result
+                    const event = new CustomEvent('media-processed', { detail: data });
+                    window.dispatchEvent(event);
+                } catch(err) {
+                    console.error("Analysis failed", err);
+                    alert("Failed to analyze photo.");
+                }
+            }, 'image/jpeg');
+        });
+
+        // 6. Handle File Selection (Upload)
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            console.log("Uploading:", file.name);
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const chatInput = document.getElementById('chat-input');
+                chatInput.value = `Analyzing ${file.name}...`;
+
+                const res = await fetch('/process_media', { method: 'POST', body: formData });
+                const data = await res.json();
+                
+                chatInput.value = ''; 
+                console.log("Media Response:", data);
+                
+                const event = new CustomEvent('media-processed', { detail: data });
+                window.dispatchEvent(event);
+            } catch(err) {
+                console.error(err);
+                alert("Upload failed.");
+            }
+            e.target.value = ''; 
+        });
+    </script>
+
+    <script>
+    if (window.require) {
+        const { ipcRenderer } = window.require('electron');
+        window.addEventListener('mousemove', (event) => {
+            const element = document.elementFromPoint(event.clientX, event.clientY);
+            if (!element) return;
+            const isInteractive = element.closest(`button, input, a, .auth-container, .dashboard-body, .hero-buttons, #chat-container, .media-menu, .media-option, .hud-card, .modal-content, #logout-btn, .camera-container`);
+            if (isInteractive) {
+                ipcRenderer.send('set-ignore-mouse-events', false);
+            } else {
+                ipcRenderer.send('set-ignore-mouse-events', true, { forward: true });
+            }
+        });
+    }
+    </script>
+</body> 
+</html>

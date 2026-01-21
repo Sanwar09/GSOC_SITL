@@ -1,0 +1,7 @@
+node_modules/
+__pycache__/
+.env
+venv/
+venv_brain/
+backend/venv/
+backend/venv_brain/

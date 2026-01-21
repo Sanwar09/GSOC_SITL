@@ -1,0 +1,516 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+/* =========================================
+   1. GLOBAL TRANSPARENCY (GHOST MODE)
+   ========================================= */
+
+html, body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    
+    /* --- TRANSPARENCY FIX --- */
+    background: transparent !important;
+    background-color: rgba(0, 0, 0, 0) !important;
+    overflow: hidden; 
+    
+    /* CRITICAL: The body itself must NOT capture mouse events */
+    /* This allows clicks to pass through empty space to your desktop */
+    pointer-events: none !important; 
+    user-select: none;
+}
+
+/* --- FIX: PUSH CANVAS TO BACK --- */
+/* Ensure the 3D Canvas allows click-through and sits behind UI */
+#canvas-container {
+    background: transparent !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1 !important; /* Move BEHIND everything */
+    pointer-events: none !important; /* Let clicks pass through 3D space */
+}
+
+canvas {
+    display: block;
+    outline: none;
+    pointer-events: none !important;
+}
+
+/* =========================================
+   2. INTERACTIVE ELEMENTS (FORCE CLICKABLE)
+   ========================================= */
+
+/* --- FIX: BRING UI TO FRONT --- */
+.auth-container, 
+.dashboard-body,
+.dashboard-hero, 
+.project-info-section,
+.hero-features-grid,
+.hero-buttons,
+#chat-container, 
+#chat-input, 
+.chat-btn, 
+#logout-btn, 
+.hud-card, 
+.modal-content, 
+.camera-container, 
+#trivia-container,
+.answer-btn,
+.topic-btn,
+#captured-photo-container,
+#top-text-container,
+.media-menu,
+.media-option,
+
+/* --- ADDED THESE NEW CLASSES FOR YOUR MEDIA BOXES --- */
+.media-popup-container,  /* Wrapper for the box */
+.media-box-header,       /* The "Now Playing" bar */
+iframe,                  /* CRITICAL: Allows clicking YouTube/Movie embeds */
+video,                   /* If you use direct video tags */
+.close-media-btn,        /* The generic close button */
+/* ---------------------------------------------------- */
+
+button, 
+input, 
+a,
+.hero-btn,
+.login-btn,
+.register-btn {
+    pointer-events: auto !important; 
+    cursor: pointer !important;
+    position: relative;
+    z-index: 99999 !important;
+}
+
+/* =========================================
+   3. HOLOGRAPHIC HUD CARD
+   ========================================= */
+.hud-card {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 380px;
+    /* Default: Small & Concise */
+    max-height: 140px; 
+    background: rgba(10, 15, 30, 0.9);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 243, 255, 0.4);
+    border-left: 4px solid #00f3ff;
+    border-radius: 12px;
+    padding: 15px;
+    color: #e0f7fa;
+    font-family: 'JetBrains Mono', monospace;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
+    z-index: 200;
+    opacity: 0;
+    animation: hudSlideDown 0.5s forwards ease-out;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    overflow: hidden;
+}
+
+/* EXPANDED STATE (Scrollable & Detailed) */
+.hud-card.expanded {
+    max-width: 600px;
+    max-height: 80vh; /* Takes up most of screen height */
+    overflow-y: auto; /* Enable Scroll */
+    background: rgba(10, 15, 30, 0.98); /* Solid background for reading */
+    border-color: #00f3ff;
+    box-shadow: 0 0 40px rgba(0, 243, 255, 0.3);
+}
+
+@keyframes hudSlideDown {
+    from { opacity: 0; transform: translate(-50%, -20px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.hud-header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+    padding-bottom: 8px; margin-bottom: 10px;
+}
+
+.hud-title { font-size: 0.8rem; color: #00f3ff; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+.hud-status { font-size: 0.7rem; color: #a5f3fc; background: rgba(0, 243, 255, 0.1); padding: 2px 6px; border-radius: 4px; }
+
+.hud-content { font-size: 0.85rem; line-height: 1.5; color: #cbd5e1; }
+.hud-hint { font-size: 0.7rem; color: #64748b; text-align: center; margin-top: 10px; font-style: italic; }
+
+.hud-card.expanded .hud-hint { display: none; } /* Hide hint when expanded */
+
+/* SCANNER EFFECT */
+.scan-line {
+    position: fixed; top: 0; left: 0; width: 100%; height: 4px;
+    background: #00f3ff;
+    box-shadow: 0 0 15px #00f3ff;
+    z-index: 9999;
+    animation: scanMove 2s ease-in-out;
+    opacity: 0;
+}
+@keyframes scanMove {
+    0% { top: 0; opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+}
+
+/* =========================================
+   4. DASHBOARD & AUTH 
+   ========================================= */
+
+/* NOTE: This class forces a background, so only use it on dashboard.html pages! */
+.dashboard-body {
+    background: #0B0F19 !important; 
+    background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+    overflow-y: auto !important; 
+    height: auto;
+    color: #cbd5e1;
+    pointer-events: auto !important; /* Ensure dashboard is clickable */
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10000;
+}
+
+.auth-container {
+    background-color: rgba(31, 41, 55, 0.95); 
+    backdrop-filter: blur(10px);
+    padding: 2.5rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 450px;
+    border: 1px solid rgba(75, 85, 99, 0.5);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: auto !important; /* Fix for clicking login */
+    z-index: 99999 !important;
+}
+
+.auth-title { font-size: 2.25rem; font-weight: 700; text-align: center; margin-bottom: 2rem; color: #67e8f9; }
+.auth-input { width: 100%; padding: 0.75rem 1rem; margin-bottom: 1rem; background-color: #374151; border: 1px solid #4b5563; border-radius: 0.5rem; color: #f3f4f6; font-size: 1rem; transition: border-color 0.3s, box-shadow 0.3s; box-sizing: border-box; }
+.auth-input:focus { outline: none; border-color: #22d3ee; box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.3); }
+.auth-button { display: inline-block; width: 100%; padding: 0.75rem 1.5rem; border-radius: 0.5rem; color: white; font-size: 1.1rem; font-weight: 600; text-align: center; text-decoration: none; cursor: pointer; transition: background-color 0.3s, transform 0.2s; border: none; box-sizing: border-box; background-color: #2563eb; }
+.auth-button:hover { transform: translateY(-2px); background-color: #1d4ed8; }
+
+/* =========================================
+   5. MAIN APP CONTAINER
+   ========================================= */
+
+#container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    pointer-events: none; 
+}
+
+#logout-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    padding: 8px 16px;
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    pointer-events: auto !important;
+}
+#logout-btn:hover { background-color: #dc2626; }
+
+/* =========================================
+   6. CHAT INTERFACE (FIXED LAYOUT)
+   ========================================= */
+
+#chat-container {
+    position: fixed; 
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    padding: 8px;
+    
+    background-color: rgba(31, 41, 55, 0.95); 
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    border: 1px solid rgba(75, 85, 99, 0.5);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    
+    /* Compact Width to fit screen */
+    width: 95%; 
+    max-width: 420px; 
+    box-sizing: border-box;
+    
+    align-items: center;
+    z-index: 10000; 
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
+    pointer-events: auto !important;
+}
+
+#chat-input {
+    flex-grow: 1;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    background-color: rgba(0,0,0,0.2); 
+    color: #f3f4f6;
+    outline: none;
+    min-width: 0; 
+    transition: all 0.3s ease;
+}
+
+.chat-btn {
+    padding: 0;
+    width: 40px; 
+    height: 40px; 
+    font-size: 1rem;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; 
+    border: none;
+    transition: 0.2s;
+    color: white;
+}
+
+#ask-btn { background-color: #0d9488; width: auto; padding: 0 15px; border-radius: 20px; }
+#mic-btn { background-color: #16a34a; }
+#mic-btn.listening { background-color: #ef4444; animation: pulse 1s infinite; }
+#stop-btn { background-color: #be123c; }
+#collapse-btn { background-color: #4b5563; }
+
+#chat-container.collapsed { left: 100%; width: auto; transform: translateX(calc(-100% - 20px)); }
+#chat-container.collapsed #chat-input, 
+#chat-container.collapsed #ask-btn, 
+#chat-container.collapsed #mic-btn, 
+#chat-container.collapsed #stop-btn { opacity: 0; width: 0; padding: 0; margin: 0; pointer-events: none; }
+#chat-container.collapsed #collapse-btn { margin-left: 0; }
+#chat-container.collapsed #collapse-btn svg { transform: rotate(180deg); }
+
+/* --- NEW: MEDIA MENU STYLES --- */
+.media-menu {
+    position: absolute;
+    bottom: 60px; /* Sits just above chat bar */
+    left: 10px;   /* Aligned with plus button */
+    background-color: #1f2937; /* Dark Slate */
+    border: 1px solid #374151;
+    border-radius: 12px;
+    padding: 8px;
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    z-index: 20000; /* Above everything */
+    min-width: 140px;
+    pointer-events: auto !important;
+}
+
+.media-menu.show {
+    display: flex;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.media-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: transparent;
+    border: none;
+    color: #e5e7eb;
+    padding: 10px 12px;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: background-color 0.2s;
+    width: 100%;
+}
+
+.media-option:hover {
+    background-color: #374151;
+}
+
+.media-icon {
+    font-size: 18px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/* TOOLS MENU (The Bubble) */
+.tools-menu {
+    position: absolute;
+    bottom: 80px;
+    left: 20px;
+    display: none; /* KEY FIX: Hides it completely so you can't click it */
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateY(10px);
+    pointer-events: none; /* KEY FIX: Disables clicking when hidden */
+}
+
+/* ACTIVE STATE (When Opened) */
+.tools-menu.active {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto; /* Re-enables clicking */
+}
+
+/* =========================================
+   7. VISUAL OUTPUTS (Text, Math, Images)
+   ========================================= */
+
+#visual-output-container {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 100;
+}
+
+/* Top Text Styling (Small glass bubble) */
+#top-text-container {
+    position: absolute;
+    top: 60px; /* Below logout button */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 380px;
+    background-color: rgba(0, 0, 0, 0.7); 
+    backdrop-filter: blur(5px);
+    padding: 10px 15px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #e5e7eb;
+    text-shadow: none;
+    z-index: 100;
+    pointer-events: auto !important; /* Make text selectable */
+}
+
+.caption-word { display: inline-block; opacity: 0; transform: translateY(5px); transition: 0.3s; margin-right: 4px; }
+.caption-word.visible { opacity: 1; transform: translateY(0); }
+
+/* Math, Hologram & Comparison Styles */
+.math-container{display:flex;flex-direction:row;gap:2vw;align-items:center;position:absolute;top:5vh;left:50%;transform:translateX(-50%)}
+.math-element{font-size:clamp(3rem,10vw,7rem);font-weight:700;color:#fff;text-shadow:2px 2px 5px rgba(0,0,0,.5);opacity:0;transform:translateY(50px) scale(.5);transition:all .5s cubic-bezier(.34,1.56,.64,1)}
+.math-element.visible{opacity:1;transform:translateY(0) scale(1)}
+
+.comparison-image-container{position:absolute;top:50%;transform:translateY(-50%) scale(.5);opacity:0;transition:all .6s cubic-bezier(.16,1,.3,1)}
+.comparison-image-container.left{left:10vw}
+.comparison-image-container.right{right:10vw}
+.comparison-image-container.visible{transform:translateY(-50%) scale(1);opacity:1}
+.comparison-image-container img{width:clamp(150px,18vw,250px);height:clamp(150px,18vw,250px);border-radius:15px;object-fit:cover;border:5px solid #fff;box-shadow:0 10px 20px rgba(0,0,0,.2)}
+
+#captured-photo-container { position: absolute; left: 40px; bottom: 120px; width: 220px; height: 220px; padding: 10px; background-color: white; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); opacity: 0; transform: translateY(100%); transition: all .6s cubic-bezier(.16,1,.3,1); }
+#captured-photo-container.visible { opacity: 1; transform: translateY(0); }
+#captured-photo-container img { width: 100%; height: 100%; border-radius: 10px; object-fit: cover; }
+
+.image-topic-container{position:absolute;left:40px;bottom:120px;display:flex;align-items:center;gap:20px;opacity:0;transform:translateY(100%);transition:all .6s cubic-bezier(.16,1,.3,1)}
+.image-topic-container.visible{opacity:1;transform:translateY(0)}
+.image-topic-container img{width:220px;height:220px;padding:10px;background-color:white;border-radius:15px;object-fit:cover;box-shadow:0 10px 25px rgba(0,0,0,0.2)}
+
+/* =========================================
+   8. WIDGETS (Timer, Camera, Trivia)
+   ========================================= */
+
+#timer-widget {
+    position: absolute;
+    top: 70px; /* Moved below top text */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(31, 41, 55, 0.9);
+    border: 1px solid #4b5563;
+    padding: 1rem 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    width: 250px;
+    pointer-events: auto !important;
+}
+#timer-display { font-size: 3rem; font-weight: 700; color: #e5e7eb; font-family: 'Inter', monospace; }
+#timer-controls { display: flex; gap: 0.5rem; }
+.timer-btn { padding: 0.5rem 1rem; border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+.timer-btn.start { background-color: #16a34a; }
+.timer-btn.pause { background-color: #d97706; }
+.timer-btn.reset { background-color: #be123c; }
+.timer-btn.edit { background-color: #4b5563; }
+
+/* Camera Modal */
+#camera-modal-overlay { font-family: 'Inter', sans-serif; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
+#camera-modal-overlay.visible { opacity: 1; pointer-events: auto; }
+.camera-container { max-width: 600px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; position: relative; background-color: #1e293b; padding: 1.5rem; border-radius: 1.5rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); transform: translateY(100vh); transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: auto !important; }
+#camera-modal-overlay.visible .camera-container { transform: translateY(0); }
+#editing-view { overflow-y: auto; }
+
+/* Generic Modal */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 2000; pointer-events: auto; }
+.modal-content { background-color: #1e293b; padding: 2rem; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); pointer-events: auto !important; }
+
+/* Trivia Game Styles */
+#trivia-modal-overlay { background-color: #0f172a; color: #fff; transition: opacity 0.3s ease; opacity: 0; pointer-events: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000; display: flex; justify-content: center; align-items: center; }
+#trivia-modal-overlay.visible { opacity: 1; pointer-events: auto; }
+#trivia-container { background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; width: 90%; max-width: 48rem; padding: 2rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); pointer-events: auto !important; }
+.topic-btn, #next-question-btn { transition: all 0.3s ease-in-out; border: 1px solid transparent; cursor: pointer; }
+.topic-btn:hover, #next-question-btn:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(59, 130, 246, 0.5); border-color: rgba(59, 130, 246, 0.8); }
+.answer-btn { transition: all 0.2s ease-in-out; border: 1px solid #4b5563; }
+.answer-btn:hover:not(:disabled) { transform: translateY(-4px); border-color: #3b82f6; background-color: #374151; }
+.correct { background-image: linear-gradient(to right, #22c55e, #16a34a) !important; border-color: #86efac !important; color: white !important; }
+.incorrect { background-image: linear-gradient(to right, #ef4444, #dc2626) !important; border-color: #fca5a5 !important; color: white !important; }
+
+.loader { border: 4px solid #4b5563; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+@keyframes flash-effect { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+.flash { animation: flash-effect 0.5s ease-in-out; }
+
+/* Dashboard V2 Styles */
+.dashboard-hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; }
+.hero-title { font-size: 4rem; font-weight: 800; color: white; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; }
+.hero-subtitle { font-size: 1.25rem; color: #9ca3af; margin-bottom: 2.5rem; }
+.hero-features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2.5rem; }
+.hero-feature-item { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 0.75rem; padding: 1rem; font-weight: 500; transition: all 0.3s; }
+.hero-feature-item:hover { transform: translateY(-5px); border-color: #3b82f6; }
+.hero-feature-item i { font-size: 1.5rem; color: #38bdf8; }
+.hero-buttons { display: flex; justify-content: center; gap: 1rem; }
+.hero-btn { padding: 0.75rem 2rem; border-radius: 0.5rem; font-weight: 600; text-decoration: none; color: white; transition: all 0.3s; }
+.login-btn { background-color: #0ea5e9; }
+.login-btn:hover { background-color: #0284c7; }
+.register-btn { background-color: #6366f1; }
+.register-btn:hover { background-color: #4f46e5; }
+.project-info-section { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; }
+.info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
+.info-block { background: #1e293b; padding: 2rem; border-radius: 1rem; border: 1px solid rgba(255, 255, 255, 0.1); transition: transform 0.3s; }
+.info-block:hover { transform: translateY(-10px); border-color: #3b82f6; }
+.info-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.info-title { font-size: 1.25rem; font-weight: 700; color: #e5e7eb; }
+.info-description { color: #9ca3af; border-bottom: 1px solid #334155; padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
+.info-list { list-style: none; padding: 0; margin: 0 0 1.5rem 0; }
+.info-list li { margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem; color: #cbd5e1; }
+.info-list li i { color: #38bdf8; }
+.info-tag { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 500; }
+.tech-tag { background-color: rgba(14, 165, 233, 0.2); color: #38bdf8; }
+.security-tag { background-color: rgba(99, 102, 241, 0.2); color: #818cf8; }
+.features-tag { background-color: rgba(22, 163, 74, 0.2); color: #4ade80; }

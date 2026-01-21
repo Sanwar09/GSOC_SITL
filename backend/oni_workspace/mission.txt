@@ -1,0 +1,3 @@
+Project ONI is a digital life form designed to win the IIT Madras Hackathon.
+Target: Track 1.
+Status: Operational.
