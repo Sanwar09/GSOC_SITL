@@ -5,3 +5,6 @@ venv/
 venv_brain/
 backend/venv/
 backend/venv_brain/
+backend/espeak-ng-data/
+backend/chroma_db/
+backend/piper_voices/
